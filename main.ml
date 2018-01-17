@@ -1,3 +1,5 @@
+open Syntax
+
 let limit = ref 1000
 
 let rec iter n e = (* ºÇÅ¬²½½èÍý¤ò¤¯¤ê¤«¤¨¤¹ (caml2html: main_iter) *)
@@ -27,14 +29,18 @@ let string s = lexbuf stdout (Lexing.from_string s) (* Ê¸»úÎó¤ò¥³¥ó¥Ñ¥¤¥ë¤·¤ÆÉ¸½
 
 let file f = (* ¥Õ¥¡¥¤¥ë¤ò¥³¥ó¥Ñ¥¤¥ë¤·¤Æ¥Õ¥¡¥¤¥ë¤Ë½ÐÎÏ¤¹¤ë (caml2html: main_file) *)
   let inchan = open_in (f ^ ".ml") in (* .ml¥Õ¥¡¥¤¥ë¤òÆþÎÏ¤È¤· *)
+  let mahi = Lexing.from_channel inchan in
+  let result = Parser.exp Lexer.token mahi in
+    print_command result;
   let outchan = open_out (f ^ ".s") in (* .s ¤È¤¤¤¦assembly file¤òÀ¸À® *)
   try
-    lexbuf outchan (Lexing.from_channel inchan);
+    lexbuf outchan mahi;
     close_in inchan;
     close_out outchan;
   with e -> (close_in inchan; close_out outchan; raise e)
 
 let () = (* ¤³¤³¤«¤é¥³¥ó¥Ñ¥¤¥é¤Î¼Â¹Ô¤¬³«»Ï¤µ¤ì¤ë (caml2html: main_entry) *)
+ 
   let files = ref [] in
   Arg.parse
     [("-inline", Arg.Int(fun i -> Inline.threshold := i), "maximum size of functions inlined");

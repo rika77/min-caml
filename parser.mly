@@ -103,8 +103,7 @@ exp: /* (* ∞Ï»Ã§Œº∞ (caml2html: parser_exp) *) */
     { LE($3, $1) }
 | IF exp THEN exp ELSE exp
     %prec prec_if
-    { 	Format.eprintf "IF@.";
-	If($2, $4, $6) }
+    { If($2, $4, $6) }
 | MINUS_DOT exp
     %prec prec_unary_minus
     { FNeg($2) }
